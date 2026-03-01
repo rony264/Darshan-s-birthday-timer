@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darshan's Birthday Countdown 🎉</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        color: white;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    h1 {
+        margin-top: 40px;
+        font-size: 40px;
+    }
+
+    #countdown {
+        font-size: 50px;
+        margin-top: 50px;
+        font-weight: bold;
+    }
+
+    #message {
+        font-size: 60px;
+        margin-top: 40px;
+        display: none;
+    }
+
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>🎂 Countdown to Darshan's Birthday 🎂</h1>
+<div id="countdown"></div>
+<div id="message">🎉 Happy Birthday Darshan! 🎉</div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+    const countdownElement = document.getElementById("countdown");
+    const messageElement = document.getElementById("message");
+
+    // Set birthday time in IST (Asia/Kolkata)
+    const birthday = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+    );
+
+    birthday.setMonth(2 - 1); // March (0-indexed)
+    birthday.setDate(2);
+    birthday.setHours(0, 0, 0, 0);
+
+    function updateCountdown() {
+        const nowIST = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+        );
+
+        const difference = birthday - nowIST;
+
+        if (difference <= 0) {
+            countdownElement.style.display = "none";
+            messageElement.style.display = "block";
+            startConfetti();
+            clearInterval(interval);
+            return;
+        }
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / 1000 / 60) % 60);
+        const seconds = Math.floor((difference / 1000) % 60);
+
+        countdownElement.innerHTML =
+            days + "d " +
+            hours + "h " +
+            minutes + "m " +
+            seconds + "s ";
+    }
+
+    const interval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Confetti Animation
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let confettiPieces = [];
+
+    function randomColor() {
+        const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#577590","#9b5de5"];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function createConfetti() {
+        for (let i = 0; i < 300; i++) {
+            confettiPieces.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                size: Math.random() * 8 + 2,
+                speed: Math.random() * 3 + 2,
+                color: randomColor(),
+                angle: Math.random() * 360
+            });
+        }
+    }
+
+    function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        confettiPieces.forEach((piece) => {
+            ctx.fillStyle = piece.color;
+            ctx.fillRect(piece.x, piece.y, piece.size, piece.size);
+        });
+
+        updateConfetti();
+    }
+
+    function updateConfetti() {
+        confettiPieces.forEach((piece) => {
+            piece.y += piece.speed;
+            if (piece.y > canvas.height) {
+                piece.y = -10;
+                piece.x = Math.random() * canvas.width;
+            }
+        });
+    }
+
+    function startConfetti() {
+        createConfetti();
+        setInterval(drawConfetti, 20);
+    }
+
+    window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+</script>
+
+</body>
+</html>
